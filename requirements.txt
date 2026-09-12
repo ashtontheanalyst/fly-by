@@ -1,2 +1,4 @@
 flask==3.0.3
 python-dotenv==1.0.1
+opensky-api @ git+https://github.com/openskynetwork/opensky-api.git#subdirectory=python
+requests==2.32.3

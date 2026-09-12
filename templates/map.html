@@ -28,16 +28,72 @@
 </head>
 <body>
     <div id="map"></div>
+
+    <script>
+        // Initialize the map and set it to a specific location and zoom level, no tiles yet
+        var map = L.map('map').setView([ {{ def_lat }}, {{ def_long }}], 10);
+
+        // Add the OpenStreetMap tile layer to the map
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Keyed by icao24 so existing markers get moved in place instead of
+        // being destroyed and recreated every refresh (that's what was
+        // causing the multi-second blank gap).
+        var flightMarkers = {};
+ 
+        function updateMarkers(flights) {
+            var seen = {};
+ 
+            flights
+                .filter(function (f) { return !f.on_ground && f.lat != null && f.lon != null; })
+                .forEach(function (f) {
+                    var id = f.icao24;
+                    seen[id] = true;
+                    var label = f.callsign || f.icao24;
+ 
+                    if (flightMarkers[id]) {
+                        flightMarkers[id].setLatLng([f.lat, f.lon]);
+                        flightMarkers[id].setPopupContent(label);
+                    } else {
+                        flightMarkers[id] = L.marker([f.lat, f.lon]).addTo(map).bindPopup(label);
+                    }
+                });
+ 
+            Object.keys(flightMarkers).forEach(function (id) {
+                if (!seen[id]) {
+                    map.removeLayer(flightMarkers[id]);
+                    delete flightMarkers[id];
+                }
+            });
+        }
+ 
+        function refreshFlights() {
+            // Whatever the map currently shows -- pan and zoom both affect this
+            var bounds = map.getBounds();
+            var params = new URLSearchParams({
+                min_lat: bounds.getSouth(),
+                max_lat: bounds.getNorth(),
+                min_lon: bounds.getWest(),
+                max_lon: bounds.getEast()
+            });
+ 
+            fetch('/get-flights?' + params.toString())
+                .then(function (resp) { return resp.json(); })
+                .then(function (data) {
+                    console.log('get-flights returned', data.count, 'flights', data);
+                    updateMarkers(data.flights || []);
+                })
+                .catch(function (err) { console.error('Failed to fetch flights:', err); });
+        }
+ 
+ 
+        // Initial load, plus a periodic refresh so flights keep moving even
+        // if you're not touching the map
+        refreshFlights();
+        setInterval(refreshFlights, 10000);
+    </script>
 </body>
 </html>
-
-<script>
-    // Initialize the map and set it to a specific location and zoom level, no tiles yet
-    var map = L.map('map').setView([ {{ def_lat }}, {{ def_long }}], 13);
-
-    // Add the OpenStreetMap tile layer to the map
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-</script>
