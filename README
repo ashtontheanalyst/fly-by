@@ -1,0 +1,40 @@
+Fly By
+
+BLUF: Flight tracker application
+
+Running the App (First Time):
+1. Clone this repo
+    git clone <url-of-this-repo>.git
+
+2. Navigate to the root of the repo in your terminal
+    cd <path-to-this-repo>/app
+
+3. Build image for container(s)
+    docker build --tag ashtonrwsmith/fly-by .
+
+4. List images and ensure it's there
+    docker images -a
+
+5. Run the container detached (background) and publish port 8008 to the host machine
+    docker run --detach --name fly-by --publish 8008:8008 ashtonrwsmith/fly-by
+
+6. Ensure container is up
+    docker ps -a
+
+7. Navigate to the app in browser
+    http://localhost:8008
+
+
+Useful Commands:
+docker stop fly-by
+docker start fly-by
+    - Self explanitory 
+
+
+Refreshing App:
+Included in this repo is a shell script to rebuild the image, delete any existing containers, and restarting a container with new image
+
+chmod +x refresh.sh
+    - On first time, run this to make it executable
+./refresh.sh
+    - Runs the script (use ../<name> if in /app dir)

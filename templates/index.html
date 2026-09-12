@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fly By - Flight Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            background: linear-gradient(180deg, #cdeaf9 0%, #8ec7e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .wordmark {
+            position: fixed;
+            top: 36%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Baloo 2", sans-serif;
+            font-weight: 800;
+            font-size: clamp(48px, 14vw, 88px);
+            color: #ffffff;
+            -webkit-text-stroke: 1.5px rgba(20, 45, 71, 0.22);
+            text-shadow:
+                0 2px 0 #ffffff,
+                0 6px 0 rgba(255, 255, 255, 0.95),
+                0 10px 18px rgba(20, 45, 71, 0.28),
+                0 3px 3px rgba(20, 45, 71, 0.3);
+            text-align: center;
+        }
+
+        .cloud-btn {
+            position: fixed;
+            top: 58%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            height: 110px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .cloud {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 140px;
+            height: 84px;
+            background: #ffffff;
+            border-radius: 60% 60% 55% 55% / 65% 65% 50% 50%;
+            box-shadow:
+                -32px 5px 0 -16px #ffffff,
+                34px 8px 0 -17px #ffffff,
+                0 8px 18px rgba(20, 45, 71, 0.2);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .cloud-left  { transform: translate(-50%, -50%); }
+        .cloud-right { transform: translate(-50%, -50%); }
+
+        .cloud-btn:hover .cloud-left  { transform: translate(calc(-50% - 62px), -50%); }
+        .cloud-btn:hover .cloud-right { transform: translate(calc(-50% + 62px), -50%); }
+
+        .label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Baloo 2", sans-serif;
+            font-weight: 700;
+            color: #2c5c86;
+            transition: opacity 0.25s ease;
+        }
+
+        .label-enter {
+            font-size: 20px;
+            opacity: 1;
+        }
+
+        .label-go {
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.25s ease 0.15s;
+        }
+
+        .cloud-btn:hover .label-enter { opacity: 0; transition: opacity 0.15s ease; }
+        .cloud-btn:hover .label-go { opacity: 1; }
+
+        .cloud-btn.launching .cloud,
+        .cloud-btn.launching .label {
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .cloud-btn.launching .cloud-left  { transform: translate(calc(-50% - 120px), -80%); }
+        .cloud-btn.launching .cloud-right { transform: translate(calc(-50% + 120px), -80%); }
+    </style>
+</head>
+<body>
+
+    <h1 class="wordmark">Fly By</h1>
+
+    <button class="cloud-btn" id="cloudBtn">
+        <div class="cloud cloud-left"></div>
+        <div class="cloud cloud-right"></div>
+        <span class="label label-enter">Enter</span>
+        <span class="label label-go">GO</span>
+    </button>
+
+    <script>
+        const btn = document.getElementById('cloudBtn');
+        btn.addEventListener('click', () => {
+            btn.classList.add('launching');
+            setTimeout(() => {
+                window.location.href = 'map';
+            }, 420);
+        });
+    </script>
+
+</body>
+</html>
