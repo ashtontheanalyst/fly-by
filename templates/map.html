@@ -33,6 +33,19 @@
         // Initialize the map and set it to a specific location and zoom level, no tiles yet
         var map = L.map('map').setView([ {{ def_lat }}, {{ def_long }}], 10);
 
+        // Plane icon default
+        var PLANE_ICON_SIZE = 24; // px
+
+        function makePlaneIcon(headingDeg) {
+            var rotation = (headingDeg || 0) - 45;
+            return L.divIcon({
+                className: 'plane-icon',
+                html: '<img src="/static/plane.svg" style="width:' + PLANE_ICON_SIZE + 'px; height:' + PLANE_ICON_SIZE + 'px; transform: rotate(' + rotation + 'deg); transform-origin: center center;">',
+                iconSize: [PLANE_ICON_SIZE, PLANE_ICON_SIZE],
+                iconAnchor: [PLANE_ICON_SIZE / 2, PLANE_ICON_SIZE / 2]
+            });
+        }
+
         // Add the OpenStreetMap tile layer to the map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -46,22 +59,26 @@
  
         function updateMarkers(flights) {
             var seen = {};
- 
+
             flights
                 .filter(function (f) { return !f.on_ground && f.lat != null && f.lon != null; })
                 .forEach(function (f) {
                     var id = f.icao24;
                     seen[id] = true;
                     var label = f.callsign || f.icao24;
- 
+                    var heading = f.heading || 0;
+
                     if (flightMarkers[id]) {
                         flightMarkers[id].setLatLng([f.lat, f.lon]);
                         flightMarkers[id].setPopupContent(label);
+                        flightMarkers[id].setIcon(makePlaneIcon(heading));
                     } else {
-                        flightMarkers[id] = L.marker([f.lat, f.lon]).addTo(map).bindPopup(label);
+                        flightMarkers[id] = L.marker([f.lat, f.lon], { icon: makePlaneIcon(heading) })
+                            .addTo(map)
+                            .bindPopup(label);
                     }
                 });
- 
+
             Object.keys(flightMarkers).forEach(function (id) {
                 if (!seen[id]) {
                     map.removeLayer(flightMarkers[id]);
