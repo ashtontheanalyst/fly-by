@@ -49,7 +49,7 @@ def get_flights():
         s = api.get_states(bbox=bbox)
     except Exception as exc:
         logging.warning("OpenSky bbox request failed: %s", exc)
-        return jsonify({"error:": "OpenSky bbox request failed", "flights": []}), 502
+        return jsonify({"error:": "OpenSky bbox request failed"}), 502
     
     # If we get an empty list/response, show the user there are no flights
     if s is None or not s.states:

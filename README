@@ -28,7 +28,9 @@ Running the App (First Time):
 Useful Commands:
 docker stop fly-by
 docker start fly-by
-    - Self explanitory 
+    - Self explanitory
+open -a Docker
+    - Get Docker up and running (daemon)
 
 
 Refreshing App:
@@ -38,3 +40,11 @@ chmod +x refresh.sh
     - On first time, run this to make it executable
 ./refresh.sh
     - Runs the script (use ../<name> if in /app dir)
+
+
+Useful Docs:
+https://openskynetwork.github.io/opensky-api/python.html#opensky_api.OpenSkyStates
+    - OpenSky Python API which gives us flight data
+
+https://leafletjs.com/
+    - Leaflet JS which gives us our map/tile

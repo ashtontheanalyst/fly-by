@@ -71,7 +71,6 @@
         }
  
         function refreshFlights() {
-            // Whatever the map currently shows -- pan and zoom both affect this
             var bounds = map.getBounds();
             var params = new URLSearchParams({
                 min_lat: bounds.getSouth(),
@@ -79,10 +78,15 @@
                 min_lon: bounds.getWest(),
                 max_lon: bounds.getEast()
             });
- 
+
             fetch('/get-flights?' + params.toString())
                 .then(function (resp) { return resp.json(); })
                 .then(function (data) {
+                    if (data.error) {
+                        // Request failed / rate-limited — keep showing last known markers
+                        console.warn('get-flights error, keeping stale markers:', data.error);
+                        return;
+                    }
                     console.log('get-flights returned', data.count, 'flights', data);
                     updateMarkers(data.flights || []);
                 })
@@ -93,7 +97,7 @@
         // Initial load, plus a periodic refresh so flights keep moving even
         // if you're not touching the map
         refreshFlights();
-        setInterval(refreshFlights, 10000);
+        setInterval(refreshFlights, 12000);
     </script>
 </body>
 </html>
